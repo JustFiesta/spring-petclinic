@@ -24,7 +24,7 @@ scmVersion {
   localOnly.set(true)
 }
 
-version = scmVersion {}.version
+version = '4.0.6-SNAPSHOT'
 
 java {
   sourceCompatibility = JavaVersion.VERSION_17
