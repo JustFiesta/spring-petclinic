@@ -161,7 +161,7 @@
     <repository>
       <id>github</id>
       <name>MyRepo</name>
-      <url>https://maven.pkg.github.com/JustFiesta/spring-petclinic.git</url>
+      <url>https://maven.pkg.github.com/JustFiesta/spring-petclinic</url>
     </repository>
   </distributionManagement>
 
