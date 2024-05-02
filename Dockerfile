@@ -8,14 +8,11 @@ RUN mvn clean package -DskipTests -Dcheckstyle.skip
 
 
 
-FROM gcr.io/distroless/java17
-
-ARG app_version=4.0.8-SNAPSHOT
-LABEL application_version=${app_version}
+FROM gcr.io/distroless/java17@sha256:e7ff67bc21960968a6e022de286d35c49bf68db728d76d1a8a533bc08ceb36c2
 
 EXPOSE 8080
 WORKDIR /app
 
-COPY --from=build /project/target/spring-petclinic-${app_version}.jar /app/java-application.jar
+COPY --from=build /project/target/java-application.jar /app/java-application.jar
 
 ENTRYPOINT [ "java", "-Dspring.profiles.active=postgres", "-jar", "java-application.jar"]

@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.springframework.samples</groupId>
   <artifactId>spring-petclinic</artifactId>
-  <version>4.0.8-SNAPSHOT</version>
+  <version>4.0.9-SNAPSHOT</version>
 
   <parent>
     <groupId>org.springframework.boot</groupId>
@@ -19,7 +19,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <!-- Important for reproducible builds. Update using e.g. ./mvnw versions:set -DnewVersion=... -->
-    <project.build.outputTimestamp>2024-04-10T10:24:34Z</project.build.outputTimestamp>
+    <project.build.outputTimestamp>2024-04-19T10:52:44Z</project.build.outputTimestamp>
 
     <!-- Web dependencies -->
     <webjars-bootstrap.version>5.3.2</webjars-bootstrap.version>
@@ -32,7 +32,7 @@
     <maven-checkstyle.version>3.3.1</maven-checkstyle.version>
     <nohttp-checkstyle.version>0.0.11</nohttp-checkstyle.version>
     <spring-format.version>0.0.40</spring-format.version>
-
+    <maven.test.skip>true</maven.test.skip>
   </properties>
 
   <dependencies>
@@ -140,13 +140,13 @@
   </dependencies>
 
   <scm>
-    <developerConnection>scm:git:https://github.com/JustFiesta/spring-petclinic.git</developerConnection>
-    <connection>scm:git:https://github.com/JustFiesta/spring-petclinic.git</connection>
+    <developerConnection>scm:git:git@github.com:JustFiesta/spring-petclinic.git</developerConnection>
+    <connection>scm:git:git@github.com:JustFiesta/spring-petclinic.git</connection>
     <url>https://github.com/JustFiesta/spring-petclinic.git</url>
-    <tag>spring-petclinic-4.0.6</tag>
+    <tag>@{project.version}</tag>
   </scm>
 
-  <distributionManagement>
+  <!-- <distributionManagement>
     <snapshotRepository>
       <id>nexus-snapshots</id>
       <url>http://localhost:8081/repository/maven-snapshost-private/</url>
@@ -155,11 +155,20 @@
       <id>nexus-releases</id>
       <url>http://localhost:8081/repository/maven-releases-private/</url>
     </repository>
+  </distributionManagement> -->
+
+  <distributionManagement>
+    <repository>
+      <id>github</id>
+      <name>MyRepo</name>
+      <url>https://maven.pkg.github.com/JustFiesta/spring-petclinic</url>
+    </repository>
   </distributionManagement>
+
 
   <build>
     <plugins>
-      <plugin>
+      <!-- <plugin>
         <groupId>org.sonatype.plugins</groupId>
         <artifactId>nexus-staging-maven-plugin</artifactId>
         <version>1.5.1</version>
@@ -177,23 +186,12 @@
           <nexusUrl>http://localhost:8081</nexusUrl>
           <skipStaging>true</skipStaging>
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-deploy-plugin</artifactId>
-        <version>${maven-deploy-plugin.version}</version>
-        <configuration>
-          <skip>true</skip>
-        </configuration>
-      </plugin>
+      </plugin> -->
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
         <version>3.0.1</version>
-        <configuration>
-          <preparationGoals>package</preparationGoals>
-          <scmCommentPrefix>[ci skip]</scmCommentPrefix>
-        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
