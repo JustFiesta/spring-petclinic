@@ -4,7 +4,7 @@ pipeline {
     environment {
         DOCKER_STORAGE = 'testfiesta/petclinic'
         SHORT_COMMIT = "${GIT_COMMIT[0..7]}"
-        GIT_TAG = ''
+        GIT_TAG = '1.0.0+test.1'
     }
 
     tools {
@@ -23,7 +23,7 @@ pipeline {
             }
             steps{
                 echo 'Running gradle checkstyle'
-                sh './gradlew check --no-daemon'
+                sh './gradlew check -x processAot --no-daemon'
             }
             post {
                 always {
@@ -37,7 +37,7 @@ pipeline {
             }
             steps {
                 echo 'Running gradle test'
-                sh './gradlew test -x check --no-daemon'
+                sh './gradlew test -x check -x processAot --no-daemon'
             }
         }
         stage('Build') {
@@ -46,8 +46,9 @@ pipeline {
             }
             steps {
                 echo 'Running build automation'
-                sh './gradlew build -x test -x check -x checkFormat -x processTestAot --no-daemon'
-                archiveArtifacts artifacts: 'build/libs/*.jar', fingerprint: true            }
+                sh './gradlew build -x test -x check -x checkFormat -x processTestAot -x processAot --no-daemon'
+                archiveArtifacts artifacts: 'build/libs/*.jar', fingerprint: true 
+            }
         }
         stage('Docker Build (MR)') {
             when {
@@ -91,6 +92,7 @@ pipeline {
                 
             }
         }
+
         stage('Docker Build (Main)') {
             when {
                 branch 'main'
@@ -100,6 +102,7 @@ pipeline {
                 sh 'docker build -t $DOCKER_STORAGE:${GIT_TAG} .'
             }
         }
+
         stage('Docker Login (Main)') {
             when {
                 branch 'main'
@@ -113,6 +116,7 @@ pipeline {
                 }
             }
         }
+
         stage('Docker Push (Main)') {
             when {
                 branch 'main'
@@ -120,6 +124,54 @@ pipeline {
             steps {
                 echo 'Pushing Image to Docker repository'
                 sh 'docker push $DOCKER_STORAGE:${GIT_TAG}'
+            }
+        }
+
+        stage('Connect to VMs'){
+            when {
+                expression { params.ACTION == 'Deploy' }
+            }
+            steps{
+                script {
+                    sh "ssh -i ${SSH_KEY} ${SSH_USER}@${VM_IP} 'echo Connected to VM'"
+                }
+            }
+        }
+
+        stage('Check and remove previous app installations'){
+            when {
+                expression { params.ACTION == 'Deploy' }
+            }
+            steps{
+                script {
+                    sh "ssh -i ${SSH_KEY} ${SSH_USER}@${VM_IP} 'docker ps -q --filter \"name=${APP_NAME}\" | grep -q . && docker stop ${APP_NAME} && docker rm ${APP_NAME} || echo \"No previous version running\"'"
+                }
+            }
+        }
+
+        stage('Pull latest Docker Image') {
+            when {
+                expression { params.ACTION == 'Deploy' }
+            }
+            steps {
+                script {
+                    sh "ssh -i ${SSH_KEY} ${SSH_USER}@${VM_IP} 'docker pull ${DOCKER_IMAGE}'"
+                }
+            }
+        }
+
+        stage('Run Application') {
+            when {
+                expression { params.ACTION == 'Deploy' }
+            }
+            steps {
+                script {
+                    sh """
+                    ssh -i ${SSH_KEY} ${SSH_USER}@${VM_IP} << EOF
+                    docker run -d --name ${APP_NAME} -e MYSQL_URL=${MYSQL_URL} -p ${APP_PORT}:8080 ${DOCKER_IMAGE}
+                    EOF
+                    """
+                }
             }
         }
     }
