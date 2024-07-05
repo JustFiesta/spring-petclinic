@@ -47,7 +47,8 @@ pipeline {
             steps {
                 echo 'Running build automation'
                 sh './gradlew build -x test -x check -x checkFormat -x processTestAot -x processAot --no-daemon'
-                archiveArtifacts artifacts: 'build/libs/*.jar', fingerprint: true            }
+                archiveArtifacts artifacts: 'build/libs/*.jar', fingerprint: true
+            }
         }
         stage('Docker Build (MR)') {
             when {

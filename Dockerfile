@@ -14,6 +14,5 @@ EXPOSE 8080
 WORKDIR /app
 
 COPY --from=build /project/build/libs/spring-petclinic-*.jar /app/java-application.jar
-COPY --from=build /project/metrics /app/metrics
 
 ENTRYPOINT [ "java", "-Dspring.profiles.active=mysql", "-jar", "java-application.jar"]
