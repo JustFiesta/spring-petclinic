@@ -25,12 +25,7 @@ They are needed for conenction to RDS. One can use it via `docker -e MYSQL_...` 
 
 ### CI/CD
 
-Jenkins server can be used in two ways:
-
-* As agent
-* As separete build server
-
-Each will change a bit in configuration.
+EC2 instance is provided with Java and Docker - it serves as Jenkins Agent.
 
 ### Dockerfile
 
@@ -42,22 +37,14 @@ Dockerfile is provided, also compose file for testing is present. Additionally, 
 
 ### CI/CD
 
-Jenkins server can be configured in two ways: agent, separete build server.
+Jenkins is configured as agent for main Controller it should be configuret out of the box after Terraform finishes providing infrastructure.
 
-As default Jenkins is configured as agent for main Controller and needs to be initilized manually (user, password, plugins, connection, etc.)
-
-Agent usage:
+This steps are nessesary if Agent doesn't work out of the box after terraform provided infrastructure:
 
 * In Controller add agent
 * Add agent via commend given from Controller.
 * Create multibranch pipeline job in Controller with GitHub project and SCM pipeline.
 * Ensure all needed credentials are added in Controller (DockerHub, GitHub, AWS, etc.) - check spring-petclinic-infrastructure README
-* Configure repository webhook for server
-
-Separete server usage:
-
-* For the pipeline to work correctly one needs to setup credentials for Docker Hub and GitHub in Jenkins server
-* Change `agent` in Jenkinsfile to `any`
 * Configure repository webhook for server
 
 ### Dockerfile
