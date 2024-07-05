@@ -72,7 +72,13 @@ dependencies {
 }
 
 tasks.named('test') {
-  useJUnitPlatform()
+    useJUnitPlatform()
+    exclude '**/PostgresIntegrationTests.class'
+}
+
+tasks.withType(Test) {
+    useJUnitPlatform()
+    exclude '**/PostgresIntegrationTests.class'
 }
 
 // Checkstyle configuration - html reports, main classes paths, do not allow http
