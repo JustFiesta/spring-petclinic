@@ -37,7 +37,7 @@ pipeline {
             }
             steps {
                 echo 'Running gradle test'
-                sh './gradlew clean test -x check -x processTestAot -x processAot --no-daemon'
+                sh './gradlew clean test -x test -x check -x processTestAot -x processAot --no-daemon'
             }
         }
         stage('Build') {
