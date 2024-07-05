@@ -23,7 +23,7 @@ pipeline {
             }
             steps{
                 echo 'Running gradle checkstyle'
-                sh './gradlew check -x processTestAot -x processAot --no-daemon'
+                sh './gradlew check -x test -x processTestAot -x processAot --no-daemon'
             }
             post {
                 always {
