@@ -23,7 +23,7 @@ pipeline {
             }
             steps{
                 echo 'Running gradle checkstyle'
-                sh './gradlew check -x test -x processTestAot -x processAot --no-daemon'
+                sh './gradlew clean check -x test -x processTestAot -x processAot --no-daemon'
             }
             post {
                 always {
@@ -37,7 +37,7 @@ pipeline {
             }
             steps {
                 echo 'Running gradle test'
-                sh './gradlew test -x check -x processTestAot -x processAot --no-daemon'
+                sh './gradlew clean test -x check -x processTestAot -x processAot --no-daemon'
             }
         }
         stage('Build') {
@@ -46,7 +46,7 @@ pipeline {
             }
             steps {
                 echo 'Running build automation'
-                sh './gradlew build -x test -x check -x checkFormat -x processTestAot -x processAot --no-daemon'
+                sh './gradlew clean build -x test -x check -x checkFormat -x processTestAot -x processAot --no-daemon'
                 archiveArtifacts artifacts: 'build/libs/*.jar', fingerprint: true
             }
         }
