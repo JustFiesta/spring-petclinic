@@ -4,7 +4,7 @@ RUN mkdir /project
 COPY . /project
 WORKDIR /project
 
-RUN gradle clean build -x check -x test
+RUN gradle clean build -x test -x check -x checkFormat -x processTestAot -x processAot
 
 
 
