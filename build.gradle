@@ -27,6 +27,7 @@ group = 'org.springframework.samples'
 
 scmVersion {
   localOnly.set(true)
+  versionIncrementer 'incrementMinor'
 }
 
 version = scmVersion {}.version
