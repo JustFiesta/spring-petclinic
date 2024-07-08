@@ -22,6 +22,7 @@ They are needed for conenction to RDS. One can use it via `docker -e MYSQL_...` 
 
 * Application is built with Gradle 8.X
 * Checkstyle is provided via Gradle plugin
+* Semantic Versioning is provided via Axion Release plugin
 
 ### CI/CD
 
