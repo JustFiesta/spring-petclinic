@@ -3,8 +3,8 @@ pipeline {
 
     environment {
         DOCKER_STORAGE = 'testfiesta/petclinic'
+        GITHUB_REPOSITORY = 'JustFiesta/spring-petclinic'
         SHORT_COMMIT = "${GIT_COMMIT[0..7]}"
-        GIT_TAG = '1.0'
     }
 
     tools {
@@ -89,7 +89,15 @@ pipeline {
             }
             steps { 
                 echo 'Tagging'
-                
+
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'github-cred', usernameVariable: 'USER', passwordVariable: 'TOKEN')]) {
+                        sh './gradlew release -Prelease.disableChecks -Prelease.pushTagsOnly -Prelease.customUsername="${USER}" -Prelease.customPassword="${TOKEN}"'
+                    }
+
+                    GIT_TAG = sh(script: './gradlew currentVersion | grep "Project version:" | sed "s/Project version: //"', returnStdout: true).trim()
+                }
+
             }
         }
         stage('Docker Build (Main)') {
