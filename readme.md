@@ -38,14 +38,12 @@ Dockerfile is provided, also compose file for testing is present. Additionally, 
 
 ### CI/CD
 
-Jenkins is configured as agent for main Controller it should be configuret out of the box after Terraform finishes providing infrastructure.
-
-This steps are nessesary if Agent doesn't work out of the box after terraform provided infrastructure:
+Jenkins is configured as agent for main Controller it should be configured manually after Terraform finishes providing infrastructure and Ansible installs packages:
 
 * In Controller add agent
 * Add agent via commend given from Controller.
 * Create multibranch pipeline job in Controller with GitHub project and SCM pipeline.
-* Ensure all needed credentials are added in Controller (DockerHub, GitHub, AWS, etc.) - check spring-petclinic-infrastructure README
+* Ensure all needed credentials with correct names are added in Controller (DockerHub - docker-cred, GitHub - github-cred, AWS) - check spring-petclinic-infrastructure README
 * Configure repository webhook for server
 
 ### Dockerfile
@@ -53,3 +51,7 @@ This steps are nessesary if Agent doesn't work out of the box after terraform pr
 For image creation basic Gradle image is used for build purposes, with addition of distroless layer for application. Image is split into layers according to (at time of creation and my knowlage) current standards, and optimalized for minimal size.
 
 Two compose files are present - one for testing connection string, other for providing container that connects to RDS.
+
+### Versioning
+
+Versioning is made using Gradle axion-release plugin. Pipeline creates local release and pushes tags into repository using GitHub Credentials.
