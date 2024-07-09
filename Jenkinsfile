@@ -16,6 +16,11 @@ pipeline {
     }
 
     stages {
+        stage('Fetch repository tags') {
+            steps {
+                sh 'git fetch --tags'
+            }
+        }
         // Merge request pipeline
         stage('Checkstyle') {
             when {
@@ -95,9 +100,9 @@ pipeline {
                         sh './gradlew release -Prelease.disableChecks -Prelease.pushTagsOnly -Prelease.customUsername="${USER}" -Prelease.customPassword="${TOKEN}"'
                     }
 
-                    GIT_TAG = sh(script: './gradlew currentVersion | grep "Project version:" | sed "s/Project version: //"', returnStdout: true).trim()
+                    env.GIT_TAG = sh(script: './gradlew currentVersion | grep "Project version:" | sed "s/Project version: //"', returnStdout: true).trim()
                 }
-
+                echo "tag of recent release: $GIT_TAG"
             }
         }
         stage('Docker Build (Main)') {
@@ -106,7 +111,7 @@ pipeline {
             }
             steps { 
                 echo 'Building docker Image'
-                sh 'docker build -t $DOCKER_STORAGE:${GIT_TAG} .'
+                sh 'docker build -t $DOCKER_STORAGE:$GIT_TAG .'
             }
         }
         stage('Docker Login (Main)') {
@@ -128,7 +133,7 @@ pipeline {
             }
             steps {
                 echo 'Pushing Image to Docker repository'
-                sh 'docker push $DOCKER_STORAGE:${GIT_TAG}'
+                sh 'docker push $DOCKER_STORAGE:$GIT_TAG'
             }
         }
     }
