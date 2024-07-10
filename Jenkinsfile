@@ -52,7 +52,7 @@ pipeline {
             steps {
                 echo 'Running build automation'
                 sh './gradlew clean build -x test -x check -x checkFormat -x processTestAot -x processAot --no-daemon'
-                archiveArtifacts artifacts: 'build/libs/*.jar', fingerprint: true
+                
             }
         }
         stage('Docker Build (MR)') {
@@ -62,6 +62,16 @@ pipeline {
             steps { 
                 echo 'Building docker Image'
                 sh 'docker build -t $DOCKER_STORAGE:${SHORT_COMMIT} .'
+            }
+        }
+        stage('Save Docker Image (MR)') {
+            when {
+                changeRequest()
+            }
+            steps {
+                echo 'Saving Docker Image'
+                sh 'docker save $DOCKER_STORAGE:${SHORT_COMMIT} -o $WORKSPACE/docker-image-${SHORT_COMMIT}.tar'
+                archiveArtifacts artifacts: 'docker-image-${SHORT_COMMIT}.tar', fingerprint: true
             }
         }
         stage('Docker Login (MR)') {
@@ -112,6 +122,16 @@ pipeline {
             steps { 
                 echo 'Building docker Image'
                 sh 'docker build -t $DOCKER_STORAGE:latest -t $DOCKER_STORAGE:$GIT_TAG .'
+            }
+        }
+        stage('Save Docker Image (Main)') {
+            when {
+                branch 'main'
+            }
+            steps {
+                echo 'Saving Docker Image'
+                sh 'docker save $DOCKER_STORAGE:$GIT_TAG -o $WORKSPACE/docker-image-${GIT_TAG}.tar'
+                archiveArtifacts artifacts: 'docker-image-*.tar', fingerprint: true
             }
         }
         stage('Docker Login (Main)') {
