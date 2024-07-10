@@ -157,6 +157,20 @@ pipeline {
                 sh 'docker push $DOCKER_STORAGE:latest'
             }
         }
+        stage('Run Ansible Deploy from Workstation'){
+            when {
+                expression { params.ACTION == 'Deploy' }
+            }
+            steps{
+                script {
+                    withCredentials([string(credentialsId: 'workstation-ip', variable: 'IP')]) {
+                        withCredenwithCredentials([sshUserPrivateKey(credentialsId: 'aws-key', keyFileVariable: 'SSH_KEY')]) {
+                            sh "ssh -i ${SSH_KEY} ubuntu@${IP} 'echo Connected to VM'"
+                        }
+                    }
+                }
+            }
+        }
     }
     post {
         always {
