@@ -45,3 +45,5 @@ Application is deploied with Ansible from Workstation. Jenkins connects to it vi
 For deployment to work correctly one needs to create IP address of workstation in Jenkinsfile credentials (workstation-ip) and ssh-copy-id is needed.
 
 Deployment will remove old containers, pull new image, run application containers and prune system from unsused layers, images, etc.
+
+If one changed default RDS identifier in Terraform configuration please provide it inside Jenkinsfile enviroment variable "RDS_INSTANCE_IDENTIFIER".
