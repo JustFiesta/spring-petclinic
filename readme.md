@@ -38,10 +38,10 @@ Versioning is made using Gradle axion-release plugin. Pipeline creates release a
 
 ### Deployment
 
+For deployment to run one needs to export manually enviroment variable named `RDS_DB` on Workstation, with correct endpoint from AWS Console. Otherwise compose will not work correctly (Bad gataway error on ALB). This enviroment variable will be passed to webservers via Ansible and used to connect containers to RDS endpoint.
+
 Application is deploied with Ansible from Workstation. Jenkins connects to it via SSH and runs playbook which deploies fresh containers on webservers with docker compose.
 
 For deployment to work correctly one needs to create IP address of workstation in Jenkinsfile credentials (workstation-ip) and ssh-copy-id is needed.
 
 Deployment will remove old containers, pull new image, run application containers and prune system from unsused layers, images, etc.
-
-For deployment to run one needs to export manually enviroment variable named `RDS_DB` on Workstation, with correct endpoint from AWS Console.
