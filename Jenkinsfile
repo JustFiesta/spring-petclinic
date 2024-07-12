@@ -7,6 +7,7 @@ pipeline {
         SHORT_COMMIT = "${GIT_COMMIT[0..7]}"
         GITHUB_INFRASTRUCTURE_REPOSITORY_URL = 'https://github.com/JustFiesta/spring-petclinic-infrastructure'
         INFRASTRUCTURE_DIRECTORY = '~/spring-petclinic-infrastructure'
+        RDS_INSTANCE_IDENTIFIER = 'capstone-petclinic'
     }
 
     tools {
@@ -182,24 +183,33 @@ pipeline {
                             }
 
                             // Clone repository application
-                            sh 'ssh -i ${SSH_KEY} ubuntu@${IP} "git clone $GITHUB_INFRASTRUCTURE_REPOSITORY_URL && cd $INFRASTRUCTURE_DIRECTORY"'
+                            sh 'ssh -i ${SSH_KEY} ubuntu@${IP} "git clone $GITHUB_INFRASTRUCTURE_REPOSITORY_URL"'
 
                             // Deploy application
-                            sh 'ssh -i ${SSH_KEY} ubuntu@${IP} "ansible-playbook playbooks/deploy-app.yml"'
+                            sh 'ssh -i ${SSH_KEY} ubuntu@${IP} "cd $INFRASTRUCTURE_DIRECTORY/ansible && pwd && ansible-playbook playbooks/deploy-app.yml"'
                         }
                     }
                 }
             }
         }
         stage('Print application link'){
+            agent { label 'aws' }
+
+            environment {
+                AWS_DEFAULT_REGION="eu-west-1"
+                AWS_CREDENTIALS=credentials('mbocak-credentials')
+            }
+
             when {
                 expression { params.ACTION == 'Deploy' }
             }
+
             steps{
                 script {
-                    def awsRdsDescribe = "aws rds describe-db-instances --query 'DBInstances[?contains(Tags[?Key==`capstone_rds_mysql`].Value, `true`)].Endpoint.Address' --output text"
-                    def rdsEndpoint = sh(script: awsCliCmd, returnStdout: true).trim()
-                    echo "RDS Endpoint: ${rdsEndpoint}"
+                    def awsRdsDescribeCmd = 'aws rds describe-db-instances --db-instance-identifier $RDS_INSTANCE_IDENTIFIER --query "DBInstances[*].Endpoint.Address"'
+                    def rdsDescribeOutput = sh(script: awsRdsDescribeCmd, returnStdout: true).trim()
+
+                    echo "RDS Endpoint: ${rdsDescribeOutput}" 
                 }
             }
         }
