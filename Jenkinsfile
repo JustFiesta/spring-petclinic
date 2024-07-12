@@ -164,8 +164,8 @@ pipeline {
             steps{
                 script {
                     withCredentials([string(credentialsId: 'workstation-ip', variable: 'IP')]) {
-                        withCredenwithCredentials([sshUserPrivateKey(credentialsId: 'aws-key', keyFileVariable: 'SSH_KEY')]) {
-                            sh "ssh -i ${SSH_KEY} ubuntu@${IP} 'echo Connected to VM'"
+                        withCredenwith([sshUserPrivateKey(credentialsId: 'aws-key', keyFileVariable: 'SSH_KEY')]) {
+                            sh "ssh -i ${SSH_KEY} ubuntu@${IP} 'echo Connected to VM > hello.txt'"
                         }
                     }
                 }
