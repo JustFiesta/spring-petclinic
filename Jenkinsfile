@@ -185,9 +185,21 @@ pipeline {
                             sh 'ssh -i ${SSH_KEY} ubuntu@${IP} "git clone $GITHUB_INFRASTRUCTURE_REPOSITORY_URL && cd $INFRASTRUCTURE_DIRECTORY"'
 
                             // Deploy application
-                            sh 'ssh -i ${SSH_KEY} ubuntu@${IP} "ansible-playbook playbooks/deploy-app.yml'
+                            sh 'ssh -i ${SSH_KEY} ubuntu@${IP} "ansible-playbook playbooks/deploy-app.yml"'
                         }
                     }
+                }
+            }
+        }
+        stage('Print application link'){
+            when {
+                expression { params.ACTION == 'Deploy' }
+            }
+            steps{
+                script {
+                    def awsRdsDescribe = "aws rds describe-db-instances --query 'DBInstances[?contains(Tags[?Key==`capstone_rds_mysql`].Value, `true`)].Endpoint.Address' --output text"
+                    def rdsEndpoint = sh(script: awsCliCmd, returnStdout: true).trim()
+                    echo "RDS Endpoint: ${rdsEndpoint}"
                 }
             }
         }
