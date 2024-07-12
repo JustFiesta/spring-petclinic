@@ -167,8 +167,24 @@ pipeline {
                 script {
                     withCredentials([string(credentialsId: 'workstation-ip', variable: 'IP')]) {
                         withCredentials([sshUserPrivateKey(credentialsId: 'aws-key', keyFileVariable: 'SSH_KEY')]) {
+                            // Add workstation to known hosts
                             sh 'ssh-keyscan -H ${IP} >> ~/.ssh/known_hosts'
+
+                            // Check if the directory already exists
+                            def directoryExists = sh(
+                                script: 'ssh -i ${SSH_KEY} ubuntu@${IP} "[ -d ~/spring-petclinic-infrastructure ] && echo \"true\" || echo \"false\""',
+                                returnStdout: true
+                            ).trim() == 'true'
+                            
+                            // If directory exists, remove it
+                            if (directoryExists) {
+                                sh 'ssh -i ${SSH_KEY} ubuntu@${IP} "rm -rf ~/spring-petclinic-infrastructure"'
+                            }
+
+                            // Clone repository application
                             sh 'ssh -i ${SSH_KEY} ubuntu@${IP} "git clone $GITHUB_INFRASTRUCTURE_REPOSITORY_URL && cd $INFRASTRUCTURE_DIRECTORY"'
+
+                            // Deploy application
                             sh 'ssh -i ${SSH_KEY} ubuntu@${IP} "ansible-playbook playbooks/deploy-app.yml'
                         }
                     }
