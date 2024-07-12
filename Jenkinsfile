@@ -164,8 +164,9 @@ pipeline {
             steps{
                 script {
                     withCredentials([string(credentialsId: 'workstation-ip', variable: 'IP')]) {
-                        withCredenwith([sshUserPrivateKey(credentialsId: 'aws-key', keyFileVariable: 'SSH_KEY')]) {
-                            sh "ssh -i ${SSH_KEY} ubuntu@${IP} 'echo Connected to VM > hello.txt'"
+                        withCredentials([sshUserPrivateKey(credentialsId: 'aws-key', keyFileVariable: 'SSH_KEY')]) {
+                            sh 'ssh -i ${SSH_KEY} ubuntu@${IP} echo Connected to VM > hello.txt'
+                            sh 'ssh -i ${SSH_KEY} ubuntu@${IP} "export RDS_DB=$RDS_DB"'
                         }
                     }
                 }
