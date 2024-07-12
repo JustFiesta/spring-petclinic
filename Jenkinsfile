@@ -5,6 +5,8 @@ pipeline {
         DOCKER_STORAGE = 'testfiesta/petclinic'
         GITHUB_REPOSITORY = 'JustFiesta/spring-petclinic'
         SHORT_COMMIT = "${GIT_COMMIT[0..7]}"
+        GITHUB_INFRASTRUCTURE_REPOSITORY_URL = 'https://github.com/JustFiesta/spring-petclinic-infrastructure'
+        INFRASTRUCTURE_DIRECTORY = '~/spring-petclinic-infrastructure'
     }
 
     tools {
@@ -166,8 +168,8 @@ pipeline {
                     withCredentials([string(credentialsId: 'workstation-ip', variable: 'IP')]) {
                         withCredentials([sshUserPrivateKey(credentialsId: 'aws-key', keyFileVariable: 'SSH_KEY')]) {
                             sh 'ssh-keyscan -H ${IP} >> ~/.ssh/known_hosts'
-                            sh 'ssh -i ${SSH_KEY} ubuntu@${IP} echo Connected to VM > hello.txt'
-                            sh 'ssh -i ${SSH_KEY} ubuntu@${IP} "export RDS_DB=$RDS_DB"'
+                            sh 'ssh -i ${SSH_KEY} ubuntu@${IP} "git clone $GITHUB_INFRASTRUCTURE_REPOSITORY_URL && cd $INFRASTRUCTURE_DIRECTORY"'
+                            sh 'ssh -i ${SSH_KEY} ubuntu@${IP} "ansible-playbook playbooks/deploy-app.yml'
                         }
                     }
                 }
