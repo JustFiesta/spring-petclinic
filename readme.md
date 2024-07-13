@@ -26,11 +26,11 @@ They are needed for conenction to RDS. One can use it via `docker -e MYSQL_...` 
 
 ### Dockerfile
 
-Dockerfile is provided, also compose file for testing is present. Additionally, there is compose file with provided sample connection string - one needs to change it accoring to RDS endpoint and user data.
+`Dockerfile` and `compose.yaml` is provided. Additionally, there is compose file for tests.
+
+The RDS endpoint is provided via enviroment variable exported manually on workstation (`RDS_DB`).
 
 For image creation basic Gradle image is used for build purposes, with addition of distroless layer for application. Image is split into layers according to (at time of creation and my knowlage) current standards, and optimalized for minimal size.
-
-Also two compose files are present - one for testing connection string, other for providing container that connects to RDS.
 
 ### Versioning
 
@@ -42,8 +42,8 @@ For deployment to run one needs to export manually enviroment variable named `RD
 
 Application is deploied with Ansible from Workstation. Jenkins connects to it via SSH and runs playbook which deploies fresh containers on webservers with docker compose.
 
-For deployment to work correctly one needs to create IP address of workstation in Jenkinsfile credentials (workstation-ip) and ssh-copy-id is needed.
+For deployment to work correctly one needs to create credentials (`workstation-ip`) in Jenkins for **IP address of workstation**.
 
-Deployment will remove old containers, pull new image, run application containers and prune system from unsused layers, images, etc.
+Deployment will: pull new image, remove old containers, run application containers and prune system from unsused layers, images, etc.
 
-If one changed default RDS identifier in Terraform configuration please provide it inside Jenkinsfile enviroment variable "RDS_INSTANCE_IDENTIFIER".
+If one changed default ALB name in Terraform configuration please provide it inside Jenkinsfile enviroment variable "ALB_NAME" - this is used to print out application link.

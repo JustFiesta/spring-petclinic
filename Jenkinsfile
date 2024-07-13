@@ -7,7 +7,7 @@ pipeline {
         SHORT_COMMIT = "${GIT_COMMIT[0..7]}"
         GITHUB_INFRASTRUCTURE_REPOSITORY_URL = 'https://github.com/JustFiesta/spring-petclinic-infrastructure'
         INFRASTRUCTURE_DIRECTORY = '~/spring-petclinic-infrastructure'
-        RDS_INSTANCE_IDENTIFIER = 'capstone-petclinic'
+        ALB_NAME = 'capstone-alb'
     }
 
     tools {
@@ -206,10 +206,10 @@ pipeline {
 
             steps{
                 script {
-                    def awsRdsDescribeCmd = 'aws rds describe-db-instances --db-instance-identifier $RDS_INSTANCE_IDENTIFIER --query "DBInstances[*].Endpoint.Address"'
-                    def rdsDescribeOutput = sh(script: awsRdsDescribeCmd, returnStdout: true).trim()
+                    def awsAlbDescribeCmd = 'aws elbv2 describe-load-balancers --names $ALB_NAME --query LoadBalancers[*].DNSName --output text'
+                    def albDescribeOutput = sh(script: awsAlbDescribeCmd, returnStdout: true).trim()
 
-                    echo "RDS Endpoint: ${rdsDescribeOutput}" 
+                    echo "Application link: ${albDescribeOutput}" 
                 }
             }
         }
