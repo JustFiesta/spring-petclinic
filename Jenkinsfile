@@ -115,7 +115,6 @@ pipeline {
 
                     env.GIT_TAG = sh(script: './gradlew currentVersion | grep "Project version:" | sed "s/Project version: //"', returnStdout: true).trim()
                 }
-                echo "tag of recent release: $GIT_TAG"
             }
         }
         stage('Docker Build (Main)') {
