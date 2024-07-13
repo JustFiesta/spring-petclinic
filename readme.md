@@ -36,6 +36,24 @@ For image creation basic Gradle image is used for build purposes, with addition 
 
 Versioning is made using Gradle axion-release plugin. Pipeline creates release and pushes tags into repository using GitHub Credentials.
 
+### Pipeline
+
+Jenkins pipeline runs on agent with specyfic label (`petclinic`).
+
+Pipeline steps include:
+
+* Fetching tags from repository
+* Gradle: checkstyle, test, build
+* Docker: build, login, push
+* Run Ansible deploy playbook from Worker VM.
+
+Pipeline is split into two parts based on given parameter (Default "MR" - serves as merge request build).
+
+Parameters:
+
+* MR pushes docker artifact to Dockerhub (default "testfiesta/petclinic") with short commit tag.
+* Deploy pushes artifact to Dockerhub with lastest and version tags. Then Jenkins runs ansible playbook for deploying latest tag into webservers.
+
 ### Deployment
 
 For deployment to run one needs to export manually enviroment variable named `RDS_DB` on Workstation, with correct endpoint from AWS Console. Otherwise compose will not work correctly (Bad gataway error on ALB). This enviroment variable will be passed to webservers via Ansible and used to connect containers to RDS endpoint.
