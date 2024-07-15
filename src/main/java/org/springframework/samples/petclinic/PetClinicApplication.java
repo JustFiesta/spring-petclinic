@@ -35,7 +35,7 @@ import java.util.Locale;
 public class PetClinicApplication {
 
 	public static void main(String[] args) {
-		System.out.println("Change in project for new version");
+		System.out.println("Hello!");
 		SpringApplication.run(PetClinicApplication.class, args);
 	}
 
