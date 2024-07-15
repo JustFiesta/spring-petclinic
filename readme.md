@@ -28,7 +28,7 @@ They are needed for conenction to RDS. One can use it via `docker -e MYSQL_...` 
 
 `Dockerfile` and `compose.yaml` is provided. Additionally, there is compose file for tests.
 
-The RDS endpoint is provided via enviroment variable exported manually on workstation (`RDS_DB`).
+The RDS endpoint is provided via enviroment variable sette manually on workstation (`RDS_DB` inside `/etc/environment`).
 
 For image creation basic Gradle image is used for build purposes, with addition of distroless layer for application. Image is split into layers according to (at time of creation and my knowlage) current standards, and optimalized for minimal size.
 
@@ -56,12 +56,20 @@ Parameters:
 
 ### Deployment
 
-For deployment to run one needs to export manually enviroment variable named `RDS_DB` on Workstation, with correct endpoint from AWS Console. Otherwise compose will not work correctly (Bad gataway error on ALB). This enviroment variable will be passed to webservers via Ansible and used to connect containers to RDS endpoint.
-
 Application is deploied with Ansible from Workstation. Jenkins connects to it via SSH and runs playbook which deploies fresh containers on webservers with docker compose.
 
 For deployment to work correctly one needs to create credentials (`workstation-ip`) in Jenkins for **IP address of workstation**.
 
+For deployment to run one needs to set manually enviroment variable named `RDS_DB` on Workstation (inside `/etc/environment`), with correct endpoint from AWS Console. Otherwise compose will not work correctly (Bad gataway error on ALB). This enviroment variable will be passed to webservers via Ansible and used to connect containers to RDS endpoint.
+
+After deployment the RDS_DB variable should be present in `/etc/environment` on Workstation and Webservers. Any server error on ALB leads to bad passing of this variable.
+
 Deployment will: pull new image, remove old containers, run application containers and prune system from unsused layers, images, etc.
 
 If one changed default ALB name in Terraform configuration please provide it inside Jenkinsfile enviroment variable "ALB_NAME" - this is used to print out application link.
+
+#### Deployment debugging
+
+1. Check ALB url
+2. Check containers on webservers (`docker ps -a`, `docker logs ...`)
+3. Check if RDS_DB is setted correctly on webservers and workstation (`echo $RDS_DB`, `sudo cat /etc/environment`)
