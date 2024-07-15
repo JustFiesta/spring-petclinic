@@ -62,7 +62,7 @@ For deployment to work correctly one needs to create credentials (`workstation-i
 
 For deployment to run one needs to set manually enviroment variable named `RDS_DB` on Workstation (inside `/etc/environment`), with correct endpoint from AWS Console. Otherwise compose will not work correctly (Bad gataway error on ALB). This enviroment variable will be passed to webservers via Ansible and used to connect containers to RDS endpoint.
 
-After deployment the RDS_DB variable should be present in `etc/environment` on Workstation and Webservers. Any server error on ALB leads to bad passing of this variable.
+After deployment the RDS_DB variable should be present in `/etc/environment` on Workstation and Webservers. Any server error on ALB leads to bad passing of this variable.
 
 Deployment will: pull new image, remove old containers, run application containers and prune system from unsused layers, images, etc.
 
