@@ -74,7 +74,7 @@ pipeline {
             steps {
                 echo 'Saving Docker Image'
                 sh 'docker save $DOCKER_STORAGE:${SHORT_COMMIT} -o $WORKSPACE/docker-image-${SHORT_COMMIT}.tar'
-                archiveArtifacts artifacts: 'docker-image-${SHORT_COMMIT}.tar', fingerprint: true
+                archiveArtifacts artifacts: 'docker-image-*.tar', fingerprint: true
             }
         }
         stage('Docker Login (MR)') {
