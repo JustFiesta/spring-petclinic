@@ -104,6 +104,7 @@ pipeline {
         stage('Git tag the current state') {
             when {
                 branch 'main'
+                expression { params.ACTION != 'Deploy' }
             }
             steps { 
                 echo 'Tagging'
@@ -120,6 +121,7 @@ pipeline {
         stage('Docker Build (Main)') {
             when {
                 branch 'main'
+                expression { params.ACTION != 'Deploy' }
             }
             steps { 
                 echo 'Building docker Image'
@@ -129,6 +131,7 @@ pipeline {
         stage('Save Docker Image (Main)') {
             when {
                 branch 'main'
+                expression { params.ACTION != 'Deploy' }
             }
             steps {
                 echo 'Saving Docker Image'
@@ -139,6 +142,7 @@ pipeline {
         stage('Docker Login (Main)') {
             when {
                 branch 'main'
+                expression { params.ACTION != 'Deploy' }
             }
             steps {
                 echo 'Docker Repository Login'
@@ -152,6 +156,7 @@ pipeline {
         stage('Docker Push (Main)') {
             when {
                 branch 'main'
+                expression { params.ACTION != 'Deploy' }
             }
             steps {
                 echo 'Pushing Image to Docker repository'
@@ -192,15 +197,15 @@ pipeline {
             }
         }
         stage('Print application link'){
+            when {
+                expression { params.ACTION == 'Deploy' }
+            }
+
             agent { label 'aws' }
 
             environment {
                 AWS_DEFAULT_REGION="eu-west-1"
                 AWS_CREDENTIALS=credentials('mbocak-credentials')
-            }
-
-            when {
-                expression { params.ACTION == 'Deploy' }
             }
 
             steps{
