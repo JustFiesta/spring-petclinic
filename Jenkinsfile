@@ -164,6 +164,8 @@ pipeline {
                 sh 'docker push $DOCKER_STORAGE:latest'
             }
         }
+
+        // Deploy  pipeline
         stage('Run Ansible Deploy from Workstation'){
             when {
                 expression { params.ACTION == 'Deploy' }
